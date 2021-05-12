@@ -1,0 +1,15 @@
+{
+  "name": "hgc-ech",
+  "version": "1.0.0",
+  "description": "Hosts servers and info for studetns",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Lewington",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^4.1.1"
+  }
+}
