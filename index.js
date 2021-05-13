@@ -1,4 +1,5 @@
 const express = require('express');
+var mysql = require('mysql');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
@@ -7,6 +8,19 @@ const io = new Server(server);
 
 // List of active users form spots.
 var activeUsers = [];
+
+//Connects to and sql server for data.
+var con = mysql.createConnection({
+  host: "10.0.0.176",
+  user: "merc",
+  password: "Astrix10"
+});
+
+// Connects to an sql database. Throws error otherwise.
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected to sql server!");
+});
 
 // Host the website using express
 app.get('/', (req, res) => {
@@ -33,4 +47,14 @@ var userobj = function(userid) {
   this.username = null;
   this.password = null;
   this.projectdir = null;
+}
+
+
+// This function is desinged to dected sterlize an input before it goes into sql, object or other things.
+function sterlizeINput(input)
+{
+const ill = "/[0-9][a-z]^s/gi";
+var countroband = input.exec()
+
+
 }
