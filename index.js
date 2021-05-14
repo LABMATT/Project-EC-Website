@@ -13,7 +13,8 @@ var activeUsers = [];
 var con = mysql.createConnection({
   host: "10.0.0.176",
   user: "merc",
-  password: "Astrix10"
+  password: "Astrix10",
+  database: "hgc-ech"
 });
 
 // Connects to an sql database. Throws error otherwise.
@@ -49,6 +50,34 @@ var userobj = function(userid) {
   this.projectdir = null;
 }
 
+// When a connection labled login is recived then attempt the login with the server.
+io.on('connection', (socket) => {
+  socket.on('login', (msg) => {
+
+    console.log("User " + msg[0] + " is attempting connection.");
+
+    var username = msg[0];
+    var password = msg[1];
+
+    var sql = "SELECT password FROM users WHERE username='" + username + "';";
+    //INSERT INTO `hgc-ech`.`users` (`username`, `password`, `projectdir`, `admin`) VALUES ('penis', 'cock', '', '0');
+    //var sql = "SELECT * FROM users;";
+
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("result is");
+      console.log(result);
+
+      if(result[0].password == password)
+      {
+        console.log("true");
+      }
+      else {
+        console.log("false");
+      }
+    });
+  })
+});
 
 // This function is desinged to dected sterlize an input before it goes into sql, object or other things.
 function sterlizeINput(input)
