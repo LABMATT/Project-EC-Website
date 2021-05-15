@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Admin</title>
+        <link rel="stylesheet" type="text/css" href="/HGC-ECH/HGC-ECH/site/styles.css">
     </head>
     <style>
     
@@ -28,25 +29,15 @@ th {
     <p>This is how your current class is looking!</p>
     
     <div>
-        <table style="width:100%">
+        <table id="table" style="width:100%">
             <tr>
-              <th>Username</th>
+              <th>Group Name</th>
               <th>Password</th>
               <th>Project DIR</th>
               <th>Project View</th>
               <th>Admin</th>
-              <th>Select</th>
               <th>Delete</th>
-            </tr>
-            <tr>
-              <td>Jill</td>
-              <td>Smith</td>
-              <td>50</td>
-            </tr>
-            <tr>
-              <td>Eve</td>
-              <td>Jackson</td>
-              <td>94</td>
+              <th>Select</th>
             </tr>
           </table>
     </div>
@@ -66,12 +57,46 @@ th {
 
     function grabTable()
     {
-
         socket.emit("admin", "update");
     }
 
     // Check the recived user name
     socket.on('username', function(msg){
-    document.getElementById("greet").innerHTML = "Hello admin " + msg + ".";
-});
+    document.getElementById("greet").innerHTML = "Welcome back admin " + msg;
+    });
+
+    // get the recived rows and build new table.
+    socket.on('update', function(msg){
+        console.log("updating table");
+        console.log(msg);
+
+    var table = document.getElementById("table");
+
+    msg.forEach(element => {
+    var row = table.insertRow(1);
+    var un = row.insertCell(0);
+    var pw = row.insertCell(1);
+    var dir = row.insertCell(2);
+    var pv = row.insertCell(3);
+    var ad = row.insertCell(4);
+    var del = row.insertCell(5);
+    var sel = row.insertCell(6);
+
+    un.innerHTML = element.username;
+    pw.innerHTML = element.password;
+    dir.innerHTML = element.projectdir;
+    pv.innerHTML = "null";
+
+    if(element.admin == 1)
+    {
+        ad.innerHTML = "true";
+    }else{
+        ad.innerHTML = "false";
+    }
+
+    del.innerHTML = "null";
+    sel.innerHTML = "<input type='checkbox' id='vehicle1' >";
+    
+    });
+    });
 </script>

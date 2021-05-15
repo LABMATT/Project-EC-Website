@@ -16,7 +16,7 @@
     }
 
    .center {
-
+     padding: 2%;
     }
  </style>
 </head>
@@ -66,13 +66,15 @@ function login()
 </script>
 
 <div class="center">
-  <label for="uname"><b>User Name</b></label>
+  <label for="uname"><b>Group Name</b></label>
   <input type="text" placeholder="" id="uname" maxlength="40" required>
   <br>
   <label for="psw"><b>Password</b></label>
   <input type="password" placeholder="" id="psw" maxlength="40" required>
   <br>
   <button id="subbut" onclick="login()">Login</button>
+
+  <p>You are required to aknolage that this server is low security and purly for the service of viewing develpment websites. <br> Chrome may propt you to change your pass word because of a databreach. This is due to how password fild is manged on the client side, please ignore this message.</p>
 
   <h1 id="er"></h1>
 </div>

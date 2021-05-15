@@ -20,9 +20,12 @@
             font-family: Arial, Helvetica, sans-serif;
         }
         </style>
-        <body>
 
-    <h1>Hello user </h1>
+        <body onload="init()">
+        <script src="/HGC-ECH/HGC-ECH/site/socket.io/dist/socket.io.js"></script>
+        <script>var socket = io("127.0.0.1:3000");</script>
+
+    <h1 id="greet"></h1>
     <p>Here is how your project is looking!</p>
 
     <div>
@@ -47,3 +50,25 @@
 
 </body>
 </html>
+
+<script>
+    function init()
+    {
+        var cid = document.cookie.substr((document.cookie.indexOf("id=") + 3), document.cookie.length).split(';')[0];
+        console.log(cid);
+        socket.emit("rego", cid);
+        socket.emit("info", ["name", cid]);
+        grabTable();
+    }
+
+    function grabTable()
+    {
+
+        socket.emit("user", "update");
+    }
+
+    // Check the recived user name
+    socket.on('username', function(msg){
+    document.getElementById("greet").innerHTML = "Welcome back user " + msg;
+});
+</script>

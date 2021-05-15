@@ -141,12 +141,9 @@ var countroband = input.exec()
 io.on('connection', (socket) => {
   socket.on('info', (msg) => {
 
-    console.log("trigged wiht " + msg[0] + " " + msg[1]);
-
     // If a username is requested then look for the id that asked in the stored data table then send back the username acoiated with it.
     if(msg[0] == "name")
     {
-      console.log("looking for id " + msg[1]);
       activeUsers.forEach(element => {
         if(element.id == msg[1])
         {
@@ -166,6 +163,20 @@ io.on('connection', (socket) => {
           element.sioid = socket.id;
         }
       });
+  })});
 
-      console.log("finished looking for the timestap id")
+   // Grab the admin table for an admin to view all users.
+io.on('connection', (socket) => {
+  socket.on('admin', (msg) => {
+
+    if(msg == "update")
+    {
+      con.query("SELECT * FROM users;", function (err, result)
+      {
+        if(err) console.log(err);
+        console.log(result);
+        socket.emit("update", result);
+      }
+      );
+    }
   })});
