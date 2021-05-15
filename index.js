@@ -1,10 +1,18 @@
-const express = require('express');
+
+// Gets socket io running.
+const { Socket } = require('socket.io');
+
+// inports sql libray.
 var mysql = require('mysql');
-const app = express();
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+
+// Sets up an express server for for socket io to communicate on.
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http, {
+  cors: {
+    origin: '*',
+  }
+});
 
 // List of active users form spots.
 var activeUsers = [];
@@ -17,15 +25,15 @@ var con = mysql.createConnection({
   database: "hgc-ech"
 });
 
+// Listen on that prot for the users.
+http.listen(3000, () => {
+  console.log('listening on *:3000');
+});
+
 // Connects to an sql database. Throws error otherwise.
 con.connect(function(err) {
   if (err) throw err;
   console.log("Connected to sql server!");
-});
-
-// Host the website using express
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
 });
 
 // On init connection then add the socket id to the array.
@@ -35,11 +43,6 @@ io.on('connection', (socket) => {
   activeUsers.push(new userobj(socket.id));
 
   console.log(activeUsers[0].id);
-});
-
-// Listen on that prot for the users.
-server.listen(3000, () => {
-  console.log('listening on *:3000');
 });
 
 // An object that stores a users info.
@@ -84,6 +87,4 @@ function sterlizeINput(input)
 {
 const ill = "/[0-9][a-z]^s/gi";
 var countroband = input.exec()
-
-
 }
