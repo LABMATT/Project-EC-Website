@@ -1,1 +1,77 @@
-<h1> hi</h1>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin</title>
+    </head>
+    <style>
+    
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 15px;
+  text-align: left;
+}
+th {
+    background-color: purple;
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+    </style>
+<body onload="init()"> 
+<script src="/HGC-ECH/HGC-ECH/site/socket.io/dist/socket.io.js"></script>
+<script>var socket = io("127.0.0.1:3000");</script>
+
+    <h1 id="greet"></h1>
+    <p>This is how your current class is looking!</p>
+    
+    <div>
+        <table style="width:100%">
+            <tr>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Project DIR</th>
+              <th>Project View</th>
+              <th>Admin</th>
+              <th>Select</th>
+              <th>Delete</th>
+            </tr>
+            <tr>
+              <td>Jill</td>
+              <td>Smith</td>
+              <td>50</td>
+            </tr>
+            <tr>
+              <td>Eve</td>
+              <td>Jackson</td>
+              <td>94</td>
+            </tr>
+          </table>
+    </div>
+
+</body>
+</html>
+
+<script>
+    function init()
+    {
+        var cid = document.cookie.substr((document.cookie.indexOf("id=") + 3), document.cookie.length).split(';')[0];
+        console.log(cid);
+        socket.emit("rego", cid);
+        socket.emit("info", ["name", cid]);
+        grabTable();
+    }
+
+    function grabTable()
+    {
+
+        socket.emit("admin", "update");
+    }
+
+    // Check the recived user name
+    socket.on('username', function(msg){
+    document.getElementById("greet").innerHTML = "Hello admin " + msg + ".";
+});
+</script>

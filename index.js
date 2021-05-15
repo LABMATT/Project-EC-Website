@@ -32,24 +32,25 @@ http.listen(3000, () => {
 
 // Connects to an sql database. Throws error otherwise.
 con.connect(function(err) {
-  if (err) throw err;
+  if (err) {
+    console.log("could not connect to sql server");
+    throw err;
+  } 
   console.log("Connected to sql server!");
 });
 
 // On init connection then add the socket id to the array.
 io.on('connection', (socket) => {
   console.log('A new user with id of: ' + socket.id);
-
-  activeUsers.push(new userobj(socket.id));
-
-  console.log(activeUsers[0].id);
 });
 
 // An object that stores a users info.
 var userobj = function(userid) {
-  this.id = userid;
+  this.id = userid; // the id we create when the user logs on.
+  this.sioid = null; // The last known socketio id
   this.username = null;
   this.password = null;
+  this.admin = null;
   this.projectdir = null;
 }
 
@@ -57,27 +58,74 @@ var userobj = function(userid) {
 io.on('connection', (socket) => {
   socket.on('login', (msg) => {
 
-    console.log("User " + msg[0] + " is attempting connection.");
-
     var username = msg[0];
     var password = msg[1];
+
+    console.log("User " + username + " is attempting connection with password " + password) + ".";
 
     var sql = "SELECT password FROM users WHERE username='" + username + "';";
     //INSERT INTO `hgc-ech`.`users` (`username`, `password`, `projectdir`, `admin`) VALUES ('penis', 'cock', '', '0');
     //var sql = "SELECT * FROM users;";
 
     con.query(sql, function (err, result) {
-      if (err) throw err;
+      if (err)
+      {
+        console.log(err);
+        socket.emit("login", [false, false]);
+      } 
+      
       console.log("result is");
       console.log(result);
 
+      if(result != undefined && result[0] != undefined)
+      {
       if(result[0].password == password)
       {
         console.log("true");
+
+        con.query("SELECT admin FROM users WHERE username='" + username + "';", function (err, result)
+        {
+          if(err) console.log(err);
+
+          // If a user indeed has matched username and password then check if there admin and update the actives users table acordinling as well as send that info back to the client.
+          if(result[0].admin == 1)
+          {
+        
+            var ob = new userobj((new Date()).getTime());
+            ob.sioid = socket.id;
+            ob.username = username;
+            ob.password = password;
+            ob.admin = true;
+            activeUsers.push(ob);
+
+            socket.emit("id", activeUsers[activeUsers.length - 1].id)
+            socket.emit("login", [true, true]);
+          }
+          else {
+            
+            var ob = new userobj((new Date()).getTime());
+            ob.sioid = socket.id;
+            ob.username = username;
+            ob.password = password;
+            ob.admin = false;
+            activeUsers.push(ob);
+
+            socket.emit("id", activeUsers[activeUsers.length - 1].id)
+            socket.emit("login", [true, false]);
+          }
+        });
+
+       
       }
       else {
         console.log("false");
+        socket.emit("login", [false, false]);
       }
+    }
+    else 
+    {
+      socket.emit("login", [false, false]);
+    }
     });
   })
 });
@@ -88,3 +136,36 @@ function sterlizeINput(input)
 const ill = "/[0-9][a-z]^s/gi";
 var countroband = input.exec()
 }
+
+// Checks for info requests labled name, if found the match the updated socketio id to the username and send the username back.
+io.on('connection', (socket) => {
+  socket.on('info', (msg) => {
+
+    console.log("trigged wiht " + msg[0] + " " + msg[1]);
+
+    // If a username is requested then look for the id that asked in the stored data table then send back the username acoiated with it.
+    if(msg[0] == "name")
+    {
+      console.log("looking for id " + msg[1]);
+      activeUsers.forEach(element => {
+        if(element.id == msg[1])
+        {
+          socket.emit("username", element.username);
+        }
+      });
+    }
+  })});
+
+  // updates new socket io id with the custom id we set
+io.on('connection', (socket) => {
+  socket.on('rego', (msg) => {
+
+      activeUsers.forEach(element => {
+        if(element.id == msg)
+        {
+          element.sioid = socket.id;
+        }
+      });
+
+      console.log("finished looking for the timestap id")
+  })});
