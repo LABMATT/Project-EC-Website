@@ -15,21 +15,39 @@ th, td {
   text-align: left;
 }
 th {
-    background-color: purple;
+    
     color: white;
     font-weight: bold;
     font-family: Arial, Helvetica, sans-serif;
 }
+
+.listus th {
+    background-color: purple;
+}
+
+.nut th {
+    background-color:  yellow;
+    color: black;
+}
+
+
     </style>
 <body onload="init()"> 
 <script src="/HGC-ECH/HGC-ECH/site/socket.io/dist/socket.io.js"></script>
 <script>var socket = io("127.0.0.1:3000");</script>
 
-    <h1 id="greet"></h1>
-    <p>This is how your current class is looking!</p>
+<div style="display: flex; flex-direction: row;">
+    <h1 style="justify-content: flex-start;" id="greet"></h1>
+
+    <button type="button" onclick="" style="padding: 1%; margin-top: 1%; position: absolute; right: 1%;">Save Groups/button>
+    <button type="button" onclick="addgroup()" style="padding: 1%; margin-top: 1%; position: absolute; right: 12%;">Add Group</button>
+
+</div>
+    <p style="">This is how your current class is looking!</p>
+
     
     <div>
-        <table id="table" style="width:100%">
+        <table class="listus" id="table" style="width:100%">
             <tr>
               <th>Group Name</th>
               <th>Password</th>
@@ -41,6 +59,7 @@ th {
             </tr>
           </table>
     </div>
+
 
 </body>
 </html>
@@ -58,6 +77,28 @@ th {
     function grabTable()
     {
         socket.emit("admin", "update");
+    }
+
+    function addgroup()
+    {
+        var table = document.getElementById("table");
+
+    var row = table.insertRow(1);
+    var un = row.insertCell(0);
+    var pw = row.insertCell(1);
+    var dir = row.insertCell(2);
+    var pv = row.insertCell(3);
+    var ad = row.insertCell(4);
+    var del = row.insertCell(5);
+    var sel = row.insertCell(6);
+
+    un.innerHTML = "<input type='text' id='nun'>";
+    pw.innerHTML = "<input type='text' id='npw'>";
+    dir.innerHTML = "Na";
+    pv.innerHTML = "Na";
+    ad.innerHTML = "<select name='isadmin' id='isadmin'> <option value='saab'>false</option><option value='volvo'>true</option></optgroup>";
+    del.innerHTML = "<button type='button' onclick=''>Delete</button>";
+    sel.innerHTML = "";
     }
 
     // Check the recived user name
@@ -85,7 +126,7 @@ th {
     un.innerHTML = element.username;
     pw.innerHTML = element.password;
     dir.innerHTML = element.projectdir;
-    pv.innerHTML = "null";
+    pv.innerHTML = "Na";
 
     if(element.admin == 1)
     {
@@ -94,9 +135,34 @@ th {
         ad.innerHTML = "false";
     }
 
-    del.innerHTML = "null";
+    del.innerHTML = "<button id='_" + element.username + "' type='button' onclick='delUser(this)'>Delete</button>";
     sel.innerHTML = "<input type='checkbox' id='vehicle1' >";
     
     });
     });
+
+    // Removes a user from the database by passing the username.
+    function delUser(usr)
+    {
+        var delusr = usr.id;
+        socket.emit("del", delusr.substr(1, delusr.length));
+        usr.deleteRow() 
+    }
+
+    // Adds a user to the database by sending the array of data.
+    function addUser(usr)
+    {
+        var delusr = usr.id;
+        socket.emit("add", []);
+        usr.deleteRow() 
+    }
+
+    // IF login is invalid then send back to login page.
+    socket.on('login', function(msg){
+        if(msg == "timeout")
+        {
+            window.location.href = "index.html";
+        }
+    });
+    
 </script>

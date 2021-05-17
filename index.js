@@ -153,16 +153,24 @@ io.on('connection', (socket) => {
     }
   })});
 
-  // updates new socket io id with the custom id we set
+  // updates new socket io id with the custom id we set. If no curret active session with that name is here then send a dissconnect message to the id.
 io.on('connection', (socket) => {
   socket.on('rego', (msg) => {
+
+    var valid = false;
 
       activeUsers.forEach(element => {
         if(element.id == msg)
         {
           element.sioid = socket.id;
+          valid = true;
         }
       });
+
+      if(valid == false)
+      {
+        socket.emit("login", "timeout");
+      }
   })});
 
    // Grab the admin table for an admin to view all users.
@@ -171,12 +179,100 @@ io.on('connection', (socket) => {
 
     if(msg == "update")
     {
-      con.query("SELECT * FROM users;", function (err, result)
+
+      activeUsers.forEach(element => {
+      if(element.sioid == socket.id)
       {
-        if(err) console.log(err);
-        console.log(result);
-        socket.emit("update", result);
+        con.query("SELECT * FROM users;", function (err, result)
+        {
+          if(err) console.log(err);
+          console.log(result);
+          socket.emit("update", result);
+        });
       }
-      );
+    });
     }
   })});
+
+  // Del user
+  io.on('connection', (socket) => {
+    socket.on('del', (msg) => {
+
+      var valid = false;
+
+      activeUsers.forEach(element => {
+        if(element.sioid == socket.id)
+        {
+          console.log("found user");
+          if(element.admin == 1)
+          {
+  
+            valid = true;
+            console.log("and is admin");
+            
+          }
+        }
+      });
+  
+      console.log("read to delete user " + msg);
+      if(valid == true)
+      {
+        console.log("privlage excetpeted");
+        con.query("DELETE FROM users WHERE username = '" + msg + "';", function (err, result)
+        {
+          if(err) console.log(err);
+          console.log(result);
+        });
+      }
+    })});
+
+
+    // Check if the person asking the claim is admin or not.
+  function isadmin(sid) {
+
+    console.log("checking amdin");
+
+    var valid = false;
+
+    activeUsers.forEach(element => {
+      if(element.sioid == sid)
+      {
+        console.log("found user");
+        if(element.admin == 1)
+        {
+
+          valid = true;
+          console.log("and is admin");
+          
+        }
+      }
+    });
+    
+return false;
+    console.log("no amdin");
+    
+  }
+
+  // INSERT INTO `hgc-ech`.`users` (`username`, `password`, `projectdir`, `admin`) VALUES ('jeff', 'corning', '0', '0');
+  // add user to database
+  io.on('connection', (socket) => {
+    socket.on('add', (msg) => {
+
+      var valid = false;
+
+      activeUsers.forEach(element => {
+        if(element.sioid == socket.id)
+        {
+          if(element.admin == 1)
+          {
+  
+            console.log("privlage excetpeted");
+            con.query("INSERT INTO users (`username`, `password`, `projectdir`, `admin`) VALUES ('" + msg[0] + "', '" + msg[1] + "', '0', '" + msg[2] + "');", function (err, result)
+            {
+              if(err) console.log(err);
+              console.log(result);
+            });
+          }
+        }
+      });
+    })});
