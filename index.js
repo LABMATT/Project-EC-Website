@@ -61,8 +61,6 @@ io.on('connection', (socket) => {
     var username = msg[0];
     var password = msg[1];
 
-    console.log("User " + username + " is attempting connection with password " + password) + ".";
-
     var sql = "SELECT password FROM users WHERE username='" + username + "';";
     //INSERT INTO `hgc-ech`.`users` (`username`, `password`, `projectdir`, `admin`) VALUES ('penis', 'cock', '', '0');
     //var sql = "SELECT * FROM users;";
@@ -73,15 +71,11 @@ io.on('connection', (socket) => {
         console.log(err);
         socket.emit("login", [false, false]);
       } 
-      
-      console.log("result is");
-      console.log(result);
 
       if(result != undefined && result[0] != undefined)
       {
       if(result[0].password == password)
       {
-        console.log("true");
 
         con.query("SELECT admin FROM users WHERE username='" + username + "';", function (err, result)
         {
@@ -118,7 +112,7 @@ io.on('connection', (socket) => {
        
       }
       else {
-        console.log("false");
+
         socket.emit("login", [false, false]);
       }
     }
@@ -186,7 +180,7 @@ io.on('connection', (socket) => {
         con.query("SELECT * FROM users;", function (err, result)
         {
           if(err) console.log(err);
-          console.log(result);
+ 
           socket.emit("update", result);
         });
       }
@@ -203,25 +197,21 @@ io.on('connection', (socket) => {
       activeUsers.forEach(element => {
         if(element.sioid == socket.id)
         {
-          console.log("found user");
+
           if(element.admin == 1)
           {
   
             valid = true;
-            console.log("and is admin");
-            
           }
         }
       });
   
-      console.log("read to delete user " + msg);
       if(valid == true)
       {
-        console.log("privlage excetpeted");
+
         con.query("DELETE FROM users WHERE username = '" + msg + "';", function (err, result)
         {
           if(err) console.log(err);
-          console.log(result);
         });
       }
     })});
@@ -230,27 +220,20 @@ io.on('connection', (socket) => {
     // Check if the person asking the claim is admin or not.
   function isadmin(sid) {
 
-    console.log("checking amdin");
-
     var valid = false;
 
     activeUsers.forEach(element => {
       if(element.sioid == sid)
       {
-        console.log("found user");
         if(element.admin == 1)
         {
 
           valid = true;
-          console.log("and is admin");
-          
         }
       }
     });
     
 return false;
-    console.log("no amdin");
-    
   }
 
   // INSERT INTO `hgc-ech`.`users` (`username`, `password`, `projectdir`, `admin`) VALUES ('jeff', 'corning', '0', '0');
@@ -258,19 +241,26 @@ return false;
   io.on('connection', (socket) => {
     socket.on('add', (msg) => {
 
-      var valid = false;
-
       activeUsers.forEach(element => {
         if(element.sioid == socket.id)
         {
           if(element.admin == 1)
           {
+            var adminvalue = 0;
+
+            if(msg[2] == "true")
+            {
+              adminvalue = 1;
+            } else 
+            {
+              adminvalue = 0;
+
+            }
   
             console.log("privlage excetpeted");
-            con.query("INSERT INTO users (`username`, `password`, `projectdir`, `admin`) VALUES ('" + msg[0] + "', '" + msg[1] + "', '0', '" + msg[2] + "');", function (err, result)
+            con.query("INSERT INTO users (`username`, `password`, `projectdir`, `admin`) VALUES ('" + msg[0] + "', '" + msg[1] + "', '0', '" + adminvalue + "');", function (err, result)
             {
               if(err) console.log(err);
-              console.log(result);
             });
           }
         }
