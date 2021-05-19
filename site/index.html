@@ -50,7 +50,7 @@ socket.on('login', function(msg){
 
 // Saves ID cookie.
 socket.on('id', function(msg){
-  document.cookie = "id=" + msg + ";";
+  document.cookie = "echid=" + msg + ";";
 });
 
 // once login is clicked, get the data from the boxes and sed it to the server.

@@ -69,7 +69,7 @@ th {
 
     function init()
     {
-        var cid = document.cookie.substr((document.cookie.indexOf("id=") + 3), document.cookie.length).split(';')[0];
+        var cid = document.cookie.substr((document.cookie.indexOf("echid=") + 3), document.cookie.length).split(';')[0];
         console.log(cid);
         socket.emit("rego", cid);
         socket.emit("info", ["name", cid]);
