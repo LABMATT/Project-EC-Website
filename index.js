@@ -19,10 +19,10 @@ var activeUsers = [];
 
 //Connects to and sql server for data.
 var con = mysql.createConnection({
-  host: "10.0.0.176",
-  user: "merc",
-  password: "Astrix10",
-  database: "hgc-ech"
+  host: "10.0.0.176",   // localhost
+  user: "merc",         //ech
+  password: "Astrix10", //esports
+  database: "hgc-ech"   //hgc-ech
 });
 
 // Listen on that prot for the users.
@@ -135,12 +135,17 @@ var countroband = input.exec()
 io.on('connection', (socket) => {
   socket.on('info', (msg) => {
 
+    console.log("recived username request:" + msg);
+
     // If a username is requested then look for the id that asked in the stored data table then send back the username acoiated with it.
     if(msg[0] == "name")
     {
+      console.log("was name");
       activeUsers.forEach(element => {
+        console.log("element " + element);
         if(element.id == msg[1])
         {
+          console.log("username found and submitted");
           socket.emit("username", element.username);
         }
       });
@@ -177,13 +182,19 @@ io.on('connection', (socket) => {
       activeUsers.forEach(element => {
       if(element.sioid == socket.id)
       {
+        if(element.admin == true)
+        {
+          console.log("is admind and sending info");
         con.query("SELECT * FROM users;", function (err, result)
         {
           if(err) console.log(err);
  
           socket.emit("update", result);
         });
+      }else{
+        socket.emit("login", "timeout");
       }
+    } 
     });
     }
   })});
@@ -201,40 +212,18 @@ io.on('connection', (socket) => {
           if(element.admin == 1)
           {
   
-            valid = true;
+            con.query("DELETE FROM users WHERE username = '" + msg + "';", function (err, result)
+            {
+              if(err) console.log(err);
+            });
+          }else{
+            socket.emit("login", "timeout");
           }
+
         }
       });
-  
-      if(valid == true)
-      {
-
-        con.query("DELETE FROM users WHERE username = '" + msg + "';", function (err, result)
-        {
-          if(err) console.log(err);
-        });
-      }
     })});
 
-
-    // Check if the person asking the claim is admin or not.
-  function isadmin(sid) {
-
-    var valid = false;
-
-    activeUsers.forEach(element => {
-      if(element.sioid == sid)
-      {
-        if(element.admin == 1)
-        {
-
-          valid = true;
-        }
-      }
-    });
-    
-return false;
-  }
 
   // INSERT INTO `hgc-ech`.`users` (`username`, `password`, `projectdir`, `admin`) VALUES ('jeff', 'corning', '0', '0');
   // add user to database
@@ -262,6 +251,8 @@ return false;
             {
               if(err) console.log(err);
             });
+          } else{
+            socket.emit("login", "timeout");
           }
         }
       });

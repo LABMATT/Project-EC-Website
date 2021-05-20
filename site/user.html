@@ -22,10 +22,19 @@
         </style>
 
         <body onload="init()">
-        <script src="/HGC-ECH/HGC-ECH/site/socket.io/dist/socket.io.js"></script>
-        <script>var socket = io("127.0.0.1:3000");</script>
 
-    <h1 id="greet"></h1>
+            
+        <script src="/HGC-ECH/HGC-ECH/site/socket.io/dist/socket.io.js"></script>
+        <script>var socket = io("127.0.0.1:3000"); // hgc.labmatt.space:3000</script>
+
+    <div style="display: flex; flex-direction: row;">
+        <h1 style="justify-content: flex-start;" id="greet"></h1>
+    
+        <button type="button" onclick="addUser()" style="padding: 1%; margin-top: 1%; position: absolute; right: 1%;">Open Editor</button>
+    
+    </div>
+
+    <p>Your project is visable to anyone with a link from anywhere! You and admins are the only one who can edit it though.</p>
     <p>Here is how your project is looking!</p>
 
     <div>
@@ -52,19 +61,20 @@
 </html>
 
 <script>
+
+    // Setup our socket io connection
     function init()
     {
-        var cid = document.cookie.substr((document.cookie.indexOf("id=") + 3), document.cookie.length).split(';')[0];
+        var cid = document.cookie.substr((document.cookie.indexOf("echid=") + 6), document.cookie.length).split(';')[0];
         console.log(cid);
-        socket.emit("rego", cid);
-        socket.emit("info", ["name", cid]);
+        socket.emit("rego", cid); // registers the new socketio id to the id we saved in the cookie.
+        socket.emit("info", ["name", cid]); // Ask for our name.
         grabTable();
     }
 
     function grabTable()
     {
-
-        socket.emit("user", "update");
+        //socket.emit("admin", "update");
     }
 
     // Check the recived user name
