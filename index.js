@@ -2,6 +2,9 @@
 // Gets socket io running.
 const { Socket } = require('socket.io');
 
+// Inport path and file sytem for use in creating, rw user webpages
+const fs = require('fs');
+
 // inports sql libray.
 var mysql = require('mysql');
 
@@ -13,6 +16,9 @@ const io = require('socket.io')(http, {
     origin: '*',
   }
 });
+
+// The main path where all user projects are stored. MUST END WITH SLASH
+const projectsPath = "/home/matthew/Downloads/testprojects/"; // Will be nginx location
 
 // List of active users form spots.
 var activeUsers = [];
@@ -211,10 +217,31 @@ io.on('connection', (socket) => {
 
           if(element.admin == 1)
           {
-  
-            con.query("DELETE FROM users WHERE username = '" + msg + "';", function (err, result)
+
+            console.log("about to sql finding dir for user " + msg);
+
+            con.query("SELECT projectdir FROM users WHERE username='" + msg + "';", function (err, result)
             {
-              if(err) console.log(err);
+              if(err) 
+              {
+                console.log(err);
+              }
+
+              console.log("Result number is:" + result[0].projectdir);
+
+              try {
+                fs.rmdirSync(result[0].projectdir, { recursive: true });
+            
+                console.log(`${result[0].projectdir} is deleted!`);
+  
+                con.query("DELETE FROM users WHERE username = '" + msg + "';", function (err, result)
+                {
+                  if(err) console.log(err);
+                });
+            } catch (err) {
+                console.error(`Error while deleting ${result[0].projectdir}.`);
+            }  
+              
             });
           }else{
             socket.emit("login", "timeout");
@@ -243,17 +270,47 @@ io.on('connection', (socket) => {
             } else 
             {
               adminvalue = 0;
-
             }
+
+            msg[0] = msg[0].replace(/\s+/g, ''); // REMOVES WHITE SPACES FORM USERNAME
+            msg[1] = msg[1].replace(/\s+/g, ''); // REMOVES WHITE SPACES FORM PASSWORD
+
+
+            var newDir = projectsPath + msg[0] + "/";
+            console.log("the dir is: " + newDir);
+
+            fs.mkdir(newDir, function(err) {
+              if (err) {
+                console.log(err)
+              } else {
+                console.log("New directory successfully created.")
+              }
+            })
   
-            console.log("privlage excetpeted");
-            con.query("INSERT INTO users (`username`, `password`, `projectdir`, `admin`) VALUES ('" + msg[0] + "', '" + msg[1] + "', '0', '" + adminvalue + "');", function (err, result)
+            con.query("INSERT INTO users (`username`, `password`, `projectdir`, `admin`) VALUES ('" + msg[0] + "', '" + msg[1] + "', '" + newDir + "', '" + adminvalue + "');", function (err, result)
             {
               if(err) console.log(err);
             });
+
+
           } else{
             socket.emit("login", "timeout");
           }
         }
       });
     })});
+
+
+
+//passsing directoryPath and callback function
+fs.readdir(projectsPath, function (err, files) {
+    //handling error
+    if (err) {
+        return console.log('Unable to scan directory: ' + err);
+    } 
+    //listing all files using forEach
+    files.forEach(function (file) {
+        // Do whatever you want to do with the file
+        console.log(file); 
+    });
+});
