@@ -60,6 +60,12 @@ var userobj = function(userid) {
   this.projectdir = null;
 }
 
+var fsdata = function() {
+  this.name = null;
+  this.last = null;
+  this.type = null;
+}
+
 // When a connection labled login is recived then attempt the login with the server.
 io.on('connection', (socket) => {
   socket.on('login', (msg) => {
@@ -205,7 +211,7 @@ io.on('connection', (socket) => {
     }
   })});
 
-  // Del user
+  // Del user, delete there director on the server then also them for them the database.
   io.on('connection', (socket) => {
     socket.on('del', (msg) => {
 
@@ -314,3 +320,64 @@ fs.readdir(projectsPath, function (err, files) {
         console.log(file); 
     });
 });
+
+   // Serve users qures and send results back to them.
+   io.on('connection', (socket) => {
+    socket.on('manager', (msg) => {
+
+      var valid = false;
+  
+        activeUsers.forEach(element => {
+        if(element.sioid == socket.id)
+        {
+          valid = true;
+
+        } if(msg[0] == "mydir") // If they ask for my dir then they want a list of the files in there dir.
+        {
+          con.query("SELECT projectdir FROM users WHERE username='" + element.username + "';", function (err, result)
+          {
+            if(err) 
+            {
+              console.log(err);
+            }
+            
+            var dirInfo = [];
+
+            fs.readdir(result[0].projectdir, function (err, files) {
+              //handling error
+              if (err) {
+                  return console.log('Unable to scan directory: ' + err);
+              } 
+              //listing all files using forEach
+              files.forEach(element=> {
+                 
+                var ob = new fsdata();
+
+                console.log("loc: " + result[0].projectdir + element)
+                fs.stat(result[0].projectdir + element, (err, stats) => {
+                  if(err) {
+                      throw err;
+                  }
+                  console.log("stats are" + stats.mtime);
+                  
+                });
+                ob.last = "a cool toype";
+                ob.name = element;
+                
+
+                dirInfo.push(ob);
+              });
+
+              socket.emit("files", dirInfo);
+          });
+
+          });
+        }
+        });
+
+      if(valid == false)
+      {
+        socket.emit("login", "timeout");
+      }
+      
+    })});

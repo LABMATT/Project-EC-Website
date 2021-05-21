@@ -38,7 +38,7 @@
     <p>Here is how your project is looking!</p>
 
     <div style="margin-right: 50%;">
-        <table style="width:100%">
+        <table id="table" style="width:100%">
             <tr>
               <th>File Name</th>
               <th>Last edited</th>
@@ -65,13 +65,13 @@
 
     function grabTable()
     {
-        //socket.emit("admin", "update");
+        socket.emit("manager", ["mydir"]);
     }
 
     // Check the recived user name
     socket.on('username', function(msg){
     document.getElementById("greet").innerHTML = "Welcome back user " + msg;
-});
+    });
 
     // IF login is invalid then send back to login page.
     socket.on('login', function(msg){
@@ -79,5 +79,48 @@
         {
             window.location.href = "index.html";
         }
+    });
+
+
+
+    // If disconnected from server then do this.
+    socket.on("disconnect", () => {
+    console.log(socket.id); // undefined
+    });
+
+    
+
+
+    // When we recive new files then bring them here.
+    socket.on('files', function(msg){
+        console.log(msg);
+        console.log("updating table");
+
+    var table = document.getElementById("table");
+    var ri = table.rows.length; 
+
+    console.log("rob amout is " + ri);
+
+    if(ri > 1)
+    {
+        for(var i = table.rows.length - 1; i > 0; i--)
+        {
+        table.deleteRow(i);
+        }
+    }
+
+    msg.forEach(element => {
+    var row = table.insertRow(1);
+    var fn = row.insertCell(0);
+    var le = row.insertCell(1);
+    var raw = row.insertCell(2);
+    var wp = row.insertCell(3);
+
+    fn.innerHTML = element.name;
+    le.innerHTML = "";
+    raw.innerHTML = "";
+    wp.innerHTML = "Na";
+    
+    });
     });
 </script>
