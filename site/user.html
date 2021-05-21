@@ -30,6 +30,7 @@
     <div style="display: flex; flex-direction: row;">
         <h1 style="justify-content: flex-start;" id="greet"></h1>
     
+        <button type="button" onclick="logout()" style="padding: 1%; margin-top: 1%; position: absolute; right: 11%;">Logout</button>
         <button type="button" onclick="location.href='editor.html'" style="padding: 1%; margin-top: 1%; position: absolute; right: 1%;">Open HTML Editor</button>
     
     </div>
@@ -41,17 +42,20 @@
         <table id="table" style="width:100%">
             <tr>
               <th>File Name</th>
-              <th>Last edited</th>
               <th>View Raw HTML</th>
               <th>View Webpage</th>
             </tr>
           </table>
     </div>
 
+    <a href="test.html" target="_blank">test raw</a>
+
 </body>
 </html>
 
 <script>
+
+    var user = null;
 
     // Setup our socket io connection
     function init()
@@ -70,6 +74,7 @@
 
     // Check the recived user name
     socket.on('username', function(msg){
+    user = msg;
     document.getElementById("greet").innerHTML = "Welcome back user " + msg;
     });
 
@@ -82,6 +87,13 @@
     });
 
 
+    // Logout the user.
+    function logout()
+    {
+        document.cookie = "echid=;"; 
+        socket.emit("logout", "logout");
+        location.href="index.html";
+    }
 
     // If disconnected from server then do this.
     socket.on("disconnect", () => {
@@ -112,14 +124,12 @@
     msg.forEach(element => {
     var row = table.insertRow(1);
     var fn = row.insertCell(0);
-    var le = row.insertCell(1);
-    var raw = row.insertCell(2);
-    var wp = row.insertCell(3);
+    var raw = row.insertCell(1);
+    var wp = row.insertCell(2);
 
     fn.innerHTML = element.name;
-    le.innerHTML = "";
     raw.innerHTML = "";
-    wp.innerHTML = "Na";
+    wp.innerHTML = "<a href='http://host.labmatt.space/" + user + "/" + element.name + "' target='_blank'>View Page</a>";
     
     });
     });

@@ -45,7 +45,8 @@ con.connect(function(err) {
   console.log("Connected to sql server!");
 });
 
-// On init connection then add the socket id to the array.
+
+// On init connection print this and there id.
 io.on('connection', (socket) => {
   console.log('A new user with id of: ' + socket.id);
 });
@@ -96,13 +97,21 @@ io.on('connection', (socket) => {
           // If a user indeed has matched username and password then check if there admin and update the actives users table acordinling as well as send that info back to the client.
           if(result[0].admin == 1)
           {
+
+            var echid = (new Date()).getTime();
         
-            var ob = new userobj((new Date()).getTime());
+            var ob = new userobj(echid);
             ob.sioid = socket.id;
             ob.username = username;
             ob.password = password;
             ob.admin = true;
             activeUsers.push(ob);
+
+            //INSERT INTO `hgc-ech`.`active` (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('9', '3', 'test', '99', '0');
+            con.query("INSERT INTO active (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('" + echid + "', '" + socket.id + "', '" + username + "', '" + echid + "', '1');", function (err, result)
+            {
+              if(err) console.log(err);
+            });
 
             socket.emit("id", activeUsers[activeUsers.length - 1].id)
             socket.emit("login", [true, true]);
@@ -115,6 +124,12 @@ io.on('connection', (socket) => {
             ob.password = password;
             ob.admin = false;
             activeUsers.push(ob);
+
+            //INSERT INTO `hgc-ech`.`active` (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('9', '3', 'test', '99', '0');
+            con.query("INSERT INTO active (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('" + echid + "', '" + socket.id + "', '" + username + "', '" + echid + "', '0');", function (err, result)
+            {
+              if(err) console.log(err);
+            });
 
             socket.emit("id", activeUsers[activeUsers.length - 1].id)
             socket.emit("login", [true, false]);
@@ -135,6 +150,36 @@ io.on('connection', (socket) => {
     });
   })
 });
+
+
+
+// updates new socket io id with the custom id we set. If no curret active session with that name is here then send a dissconnect message to the id.
+io.on('connection', (socket) => {
+  socket.on('rego', (msg) => {
+
+    var valid = false;
+
+      activeUsers.forEach(element => {
+        if(element.id == msg)
+        {
+          element.sioid = socket.id;
+          valid = true;
+        }
+      });
+
+      if(valid == false)
+      {
+        socket.emit("login", "timeout");
+      }
+
+      // UPDATE `hgc-ech`.`active` SET `socketid` = '4' WHERE (`echid` = '9');
+      con.query("UPDATE active SET `socketid` = '" + socket.id + "' WHERE (`echid` = '"+ msg +"'); ", function (err, result)
+      {
+       if (err) console.log(err);
+      });
+  })});
+
+
 
 // This function is desinged to dected sterlize an input before it goes into sql, object or other things.
 function sterlizeINput(input)
@@ -164,25 +209,7 @@ io.on('connection', (socket) => {
     }
   })});
 
-  // updates new socket io id with the custom id we set. If no curret active session with that name is here then send a dissconnect message to the id.
-io.on('connection', (socket) => {
-  socket.on('rego', (msg) => {
-
-    var valid = false;
-
-      activeUsers.forEach(element => {
-        if(element.id == msg)
-        {
-          element.sioid = socket.id;
-          valid = true;
-        }
-      });
-
-      if(valid == false)
-      {
-        socket.emit("login", "timeout");
-      }
-  })});
+  
 
    // Grab the admin table for an admin to view all users.
 io.on('connection', (socket) => {
@@ -352,19 +379,8 @@ fs.readdir(projectsPath, function (err, files) {
               files.forEach(element=> {
                  
                 var ob = new fsdata();
-
-                console.log("loc: " + result[0].projectdir + element)
-                fs.stat(result[0].projectdir + element, (err, stats) => {
-                  if(err) {
-                      throw err;
-                  }
-                  console.log("stats are" + stats.mtime);
-                  
-                });
-                ob.last = "a cool toype";
                 ob.name = element;
                 
-
                 dirInfo.push(ob);
               });
 
@@ -381,3 +397,16 @@ fs.readdir(projectsPath, function (err, files) {
       }
       
     })});
+
+       // pon logout request then delete from active users table.
+   io.on('logout', (socket) => {
+    socket.on('logout', (msg) => {
+      
+      activeUsers.forEach(element => {
+        if(element.sioid == socket.id)
+        {
+
+        }
+      });
+    });
+  });

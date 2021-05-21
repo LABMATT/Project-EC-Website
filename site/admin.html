@@ -39,6 +39,7 @@ th {
 <div style="display: flex; flex-direction: row;">
     <h1 style="justify-content: flex-start;" id="greet"></h1>
 
+    <button type="button" onclick="logout()" style="padding: 1%; margin-top: 1%; position: absolute; right: 20%;">Logout</button>
     <button type="button" onclick="addUser()" style="padding: 1%; margin-top: 1%; position: absolute; right: 1%;">Save Groups</button>
     <button type="button" onclick="addgroup()" style="padding: 1%; margin-top: 1%; position: absolute; right: 12%;">Add Group</button>
 
@@ -199,4 +200,12 @@ th {
         }
     });
     
+
+        // Logout the user.
+        function logout()
+    {
+        document.cookie = "echid=;"; 
+        socket.emit("logout", "logout");
+        location.href="index.html";
+    }
 </script>
