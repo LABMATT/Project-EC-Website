@@ -107,10 +107,14 @@ io.on('connection', (socket) => {
             ob.admin = true;
             activeUsers.push(ob);
 
+            console.log("the echid is: " + echid);
+
             //INSERT INTO `hgc-ech`.`active` (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('9', '3', 'test', '99', '0');
             con.query("INSERT INTO active (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('" + echid + "', '" + socket.id + "', '" + username + "', '" + echid + "', '1');", function (err, result)
             {
               if(err) console.log(err);
+
+              console.log(result);
             });
 
             socket.emit("id", activeUsers[activeUsers.length - 1].id)
