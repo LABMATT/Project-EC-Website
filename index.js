@@ -99,13 +99,6 @@ io.on('connection', (socket) => {
           {
 
             var echid = (new Date()).getTime();
-        
-            var ob = new userobj(echid);
-            ob.sioid = socket.id;
-            ob.username = username;
-            ob.password = password;
-            ob.admin = true;
-            activeUsers.push(ob);
 
             console.log("the echid is: " + echid);
 
@@ -117,17 +110,12 @@ io.on('connection', (socket) => {
               console.log(result);
             });
 
-            socket.emit("id", activeUsers[activeUsers.length - 1].id)
+            socket.emit("id", echid)
             socket.emit("login", [true, true]);
           }
           else {
             
-            var ob = new userobj((new Date()).getTime());
-            ob.sioid = socket.id;
-            ob.username = username;
-            ob.password = password;
-            ob.admin = false;
-            activeUsers.push(ob);
+            var echid = (new Date()).getTime();
 
             //INSERT INTO `hgc-ech`.`active` (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('9', '3', 'test', '99', '0');
             con.query("INSERT INTO active (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('" + echid + "', '" + socket.id + "', '" + username + "', '" + echid + "', '0');", function (err, result)
@@ -135,7 +123,7 @@ io.on('connection', (socket) => {
               if(err) console.log(err);
             });
 
-            socket.emit("id", activeUsers[activeUsers.length - 1].id)
+            socket.emit("id", echid)
             socket.emit("login", [true, false]);
           }
         });
@@ -161,27 +149,25 @@ io.on('connection', (socket) => {
 io.on('connection', (socket) => {
   socket.on('rego', (msg) => {
 
-    var valid = false;
-
-      activeUsers.forEach(element => {
-        if(element.id == msg)
-        {
-          element.sioid = socket.id;
-          valid = true;
-        }
-      });
-
-      if(valid == false)
-      {
-        socket.emit("login", "timeout");
-      }
-
       // UPDATE `hgc-ech`.`active` SET `socketid` = '4' WHERE (`echid` = '9');
-      con.query("UPDATE active SET `socketid` = '" + socket.id + "' WHERE (`echid` = '"+ msg +"'); ", function (err, result)
+      con.query("UPDATE active SET socketid='" + socket.id + "' WHERE echid= '"+ msg +"';", function (err, result)
       {
-       if (err) console.log(err);
+
+       if (err) 
+       {
+
+         console.log(err);
+         socket.emit("login", "timeout");
+       } else {
+
+       console.log("updating rego");
+       console.log(result);
+       }
+
+       
       });
-  })});
+  });
+});
 
 
 
@@ -201,104 +187,141 @@ io.on('connection', (socket) => {
     // If a username is requested then look for the id that asked in the stored data table then send back the username acoiated with it.
     if(msg[0] == "name")
     {
-      console.log("was name");
-      activeUsers.forEach(element => {
-        console.log("element " + element);
-        if(element.id == msg[1])
-        {
-          console.log("username found and submitted");
-          socket.emit("username", element.username);
-        }
-      });
+
+    // get username from active database;
+    con.query("SELECT username FROM active WHERE socketid='" + socket.id + "';", function (err, result)
+    {
+     if (err) 
+     {
+
+       console.log(err);
+       socket.emit("login", "timeout");
+     } else{
+      console.log("the username should be ");
+      console.log(result);
+      socket.emit("username", result[0].username);
+     }
+    });
     }
-  })});
+
+    
+ });
+ });
 
   
 
    // Grab the admin table for an admin to view all users.
-io.on('connection', (socket) => {
+  io.on('connection', (socket) => {
   socket.on('admin', (msg) => {
 
     if(msg == "update")
     {
 
-      activeUsers.forEach(element => {
-      if(element.sioid == socket.id)
+    // get username from active database;
+    con.query("SELECT admin FROM active WHERE socketid= '" + socket.id + "';", function (err, result)
+    {
+     if (err) 
+     {
+
+       console.log(err);
+       socket.emit("login", "timeout");
+     } else{
+      
+      if(result[0].admin == 1)
       {
-        if(element.admin == true)
-        {
-          console.log("is admind and sending info");
+
         con.query("SELECT * FROM users;", function (err, result)
         {
-          if(err) console.log(err);
- 
-          socket.emit("update", result);
-        });
-      }else{
-        socket.emit("login", "timeout");
-      }
-    } 
-    });
-    }
-  })});
 
-  // Del user, delete there director on the server then also them for them the database.
-  io.on('connection', (socket) => {
-    socket.on('del', (msg) => {
-
-      var valid = false;
-
-      activeUsers.forEach(element => {
-        if(element.sioid == socket.id)
-        {
-
-          if(element.admin == 1)
+          if(err)
           {
-
-            console.log("about to sql finding dir for user " + msg);
-
-            con.query("SELECT projectdir FROM users WHERE username='" + msg + "';", function (err, result)
-            {
-              if(err) 
-              {
-                console.log(err);
-              }
-
-              console.log("Result number is:" + result[0].projectdir);
-
-              try {
-                fs.rmdirSync(result[0].projectdir, { recursive: true });
             
-                console.log(`${result[0].projectdir} is deleted!`);
-  
-                con.query("DELETE FROM users WHERE username = '" + msg + "';", function (err, result)
-                {
-                  if(err) console.log(err);
-                });
-            } catch (err) {
-                console.error(`Error while deleting ${result[0].projectdir}.`);
-            }  
-              
-            });
-          }else{
+            console.log(err);
             socket.emit("login", "timeout");
+          } else {
+
+            socket.emit("update", result);
           }
+        });
+      }
+    }
+  });
+}
+});
+});
 
-        }
-      });
-    })});
 
+       // Delete user from useres database from admin.
+io.on('connection', (socket) => {
+  socket.on('del', (msg) => {
 
-  // INSERT INTO `hgc-ech`.`users` (`username`, `password`, `projectdir`, `admin`) VALUES ('jeff', 'corning', '0', '0');
-  // add user to database
-  io.on('connection', (socket) => {
-    socket.on('add', (msg) => {
+    // get username from active database;
+    con.query("SELECT admin FROM active WHERE socketid='" + socket.id + "';", function (err, result)
+    {
+     if (err) 
+     {
 
-      activeUsers.forEach(element => {
-        if(element.sioid == socket.id)
+       console.log(err);
+       socket.emit("login", "timeout");
+     } else{
+      
+      if(result[0].admin == 1)
+      {
+
+        console.log("about to sql finding dir for user " + msg);
+
+        con.query("SELECT projectdir FROM users WHERE username='" + msg + "';", function (err, result)
         {
-          if(element.admin == 1)
+
+          if(err) 
           {
+            console.log(err);
+            socket.emit("login", "timeout");
+          } 
+          else {
+
+          console.log("Result number is:" + result[0].projectdir);
+
+          try {
+            fs.rmdirSync(result[0].projectdir, { recursive: true });
+        
+            console.log(`${result[0].projectdir} is deleted!`);
+
+        } catch (err) {
+            console.error(`Error while deleting ${result[0].projectdir}.`);
+        }  
+
+        con.query("DELETE FROM users WHERE username='" + msg + "';", function (err, result)
+        {
+          if(err) console.log(err);
+        });
+      }
+        });
+      }
+    }
+  });
+
+});
+});
+
+
+   // Add user to the users database.
+   io.on('connection', (socket) => {
+    socket.on('add', (msg) => {
+  
+      // get username from active database;
+      con.query("SELECT admin FROM active WHERE socketid= '" + socket.id + "';", function (err, result)
+      {
+       if(err) 
+       {
+  
+         console.log(err);
+         socket.emit("login", "timeout");
+       } else{
+        
+        if(result[0].admin == 1)
+        {
+
             var adminvalue = 0;
 
             if(msg[2] == "true")
@@ -320,23 +343,21 @@ io.on('connection', (socket) => {
               if (err) {
                 console.log(err)
               } else {
+                
                 console.log("New directory successfully created.")
+
+                con.query("INSERT INTO users (`username`, `password`, `projectdir`, `admin`) VALUES ('" + msg[0] + "', '" + msg[1] + "', '" + newDir + "', '" + adminvalue + "');", function (err, result)
+              {
+              if(err) console.log(err);
+              });
               }
             })
-  
-            con.query("INSERT INTO users (`username`, `password`, `projectdir`, `admin`) VALUES ('" + msg[0] + "', '" + msg[1] + "', '" + newDir + "', '" + adminvalue + "');", function (err, result)
-            {
-              if(err) console.log(err);
-            });
-
-
-          } else{
-            socket.emit("login", "timeout");
-          }
         }
-      });
-    })});
-
+      }
+    });
+  
+  });
+  });
 
 
 //passsing directoryPath and callback function
@@ -400,17 +421,5 @@ fs.readdir(projectsPath, function (err, files) {
         socket.emit("login", "timeout");
       }
       
-    })});
-
-       // pon logout request then delete from active users table.
-   io.on('logout', (socket) => {
-    socket.on('logout', (msg) => {
-      
-      activeUsers.forEach(element => {
-        if(element.sioid == socket.id)
-        {
-
-        }
-      });
     });
   });
