@@ -360,66 +360,46 @@ io.on('connection', (socket) => {
   });
 
 
-//passsing directoryPath and callback function
-fs.readdir(projectsPath, function (err, files) {
-    //handling error
-    if (err) {
-        return console.log('Unable to scan directory: ' + err);
-    } 
-    //listing all files using forEach
-    files.forEach(function (file) {
-        // Do whatever you want to do with the file
-        console.log(file); 
-    });
-});
 
-   // Serve users qures and send results back to them.
-   io.on('connection', (socket) => {
-    socket.on('manager', (msg) => {
+     // Serve users qures and send results back to them.
+     io.on('connection', (socket) => {
+      socket.on('manager', (msg) => {
 
-      var valid = false;
+        if(msg[0] == "mydir") // If they ask for my dir then they want a list of the files in there dir.
+        {
+          con.query("SELECT username FROM active WHERE socketid= '" + socket.id + "';", function (err, usrnm)
+      {
+       if(err) 
+       {
   
-        activeUsers.forEach(element => {
-        if(element.sioid == socket.id)
-        {
-          valid = true;
+         console.log(err);
+         socket.emit("login", "timeout");
+       } else{
 
-        } if(msg[0] == "mydir") // If they ask for my dir then they want a list of the files in there dir.
-        {
-          con.query("SELECT projectdir FROM users WHERE username='" + element.username + "';", function (err, result)
+        con.query("SELECT projectdir FROM users WHERE username='" + usrnm[0].username + "';", function (err, result)
           {
             if(err) 
             {
               console.log(err);
-            }
-            
-            var dirInfo = [];
+            } else{
+
+              var dirInfo = [];
 
             fs.readdir(result[0].projectdir, function (err, files) {
               //handling error
               if (err) {
                   return console.log('Unable to scan directory: ' + err);
               } 
-              //listing all files using forEach
-              files.forEach(element=> {
-                 
-                var ob = new fsdata();
-                ob.name = element;
-                
-                dirInfo.push(ob);
-              });
 
-              socket.emit("files", dirInfo);
+              socket.emit("files", files);
+            });
+            }
           });
+       }
+      });
 
-          });
+          
         }
-        });
-
-      if(valid == false)
-      {
-        socket.emit("login", "timeout");
-      }
-      
     });
-  });
+    });
+    
