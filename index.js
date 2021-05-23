@@ -20,9 +20,6 @@ const io = require('socket.io')(http, {
 // The main path where all user projects are stored. MUST END WITH SLASH
 const projectsPath = "/home/matthew/Downloads/testprojects/"; // Will be nginx location
 
-// List of active users form spots.
-var activeUsers = [];
-
 //Connects to and sql server for data.
 var con = mysql.createConnection({
   host: "10.0.0.176",   // localhost
@@ -51,15 +48,29 @@ io.on('connection', (socket) => {
   console.log('A new user with id of: ' + socket.id);
 });
 
-// An object that stores a users info.
-var userobj = function(userid) {
-  this.id = userid; // the id we create when the user logs on.
-  this.sioid = null; // The last known socketio id
-  this.username = null;
-  this.password = null;
-  this.admin = null;
-  this.projectdir = null;
-}
+io.on('connection', (socket) => {
+socket.on('disconnect', function () {
+
+  console.log("user has dissconnected");
+
+  con.query("SELECT echid FROM active WHERE socketid='" + socket.id + "';", function (err, result)
+        {
+          if(err) 
+          {
+            console.log(err);
+          } else {
+
+            console.log("the users echid was :" + result);
+
+            if(result[0] != undefined)
+            {
+              console.log("Setting timeout");
+              setTimeout(timeout, 5000, [result[0].echid, socket.id]);
+            }
+          }
+        });
+});
+});
 
 var fsdata = function() {
   this.name = null;
@@ -396,10 +407,55 @@ io.on('connection', (socket) => {
             }
           });
        }
-      });
-
-          
+      }); 
         }
     });
     });
     
+
+    io.on('connection', (socket) => {
+      socket.on('logout', (msg) => {
+
+        console.log("loging user out");
+
+        con.query("DELETE FROM active WHERE socketid='" + socket.id + "';", function (err, result)
+        {
+          if(err) console.log(err);
+        });
+      });
+    });
+
+
+    function timeout(id, socketid)
+    {
+      console.log("Checking info using: " + id + " " + socketid);
+
+      con.query("SELECT socketid FROM active WHERE echid='" + id + "';", function (err, result)
+      {
+        if(err) 
+        {
+          console.log(err); 
+        } else {
+
+          console.log("The current socket id after time is: ");
+          console.log(result);
+
+          if(result[0] != undefined) {
+          if(result[0].socketid == socketid)
+          {
+            console.log("Is not equal so remving from table");
+            con.query("DELETE FROM active WHERE echid='" + id + "';", function (err, result)
+            {
+              if(err) 
+              {
+                console.log(err);
+              } else {
+    
+                console.log("User with echid <" + id + "> was removed from the active users table.")
+              }
+            });
+          }
+        }
+        }
+      });
+    }
