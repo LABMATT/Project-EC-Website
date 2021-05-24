@@ -426,8 +426,11 @@ io.on('connection', (socket) => {
     });
 
 
-    function timeout(id, socketid)
+    function timeout(input)
     {
+      id = input[0];
+      socketid = input[1];
+
       console.log("Checking info using: " + id + " " + socketid);
 
       con.query("SELECT socketid FROM active WHERE echid='" + id + "';", function (err, result)
