@@ -1,0 +1,80 @@
+body {
+    margin: 0%;     
+    background-color: gray;
+    overflow: hidden;
+}
+
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+overflow: hidden;
+background-color: rgb(26, 26, 26);
+}
+
+li {
+float: left;
+}
+
+li a {
+display: block;
+color: white;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+li a:hover {
+background-color: rgb(255, 0, 0);
+}
+
+
+
+#tree {
+
+}
+
+.edit {
+    
+}
+
+#numdiv {
+    float: left;
+    height: 100%;
+    background-color: blue; 
+}   
+
+#editdiv {
+        height: 50%;
+        width: 100%;
+        min-height: 100%;
+        background-color: red;
+        white-space:nowrap;
+}
+
+textarea {
+    font-size: 0.9vw;
+    line-height: normal;
+    height: 100%;
+    width: 100%;
+    white-space: nowrap;
+    min-height: 100%;
+    resize: none;
+    outline: none;
+}
+
+input:focus, textarea:focus, select:focus{
+    outline: none;
+}
+
+#linenum {
+margin: 0%;
+padding: 0%;
+font-size: 0.9vw;
+line-height: normal;
+height: 100%;
+resize: none;
+overflow: hidden;
+outline: none;
+}

@@ -210,7 +210,10 @@ io.on('connection', (socket) => {
      } else{
       console.log("the username should be ");
       console.log(result);
-      socket.emit("username", result[0].username);
+      if(result != undefined)
+      {
+        socket.emit("username", result[0].username);
+      }
      }
     });
     }
@@ -426,6 +429,7 @@ io.on('connection', (socket) => {
     });
 
 
+    // After 15 seconds of a socket disconnection this function will remove you form ==rm active useres database.
     function timeout(input)
     {
       id = input[0];
