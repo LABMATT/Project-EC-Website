@@ -42,6 +42,23 @@ con.connect(function(err) {
   console.log("Connected to sql server!");
 });
 
+function heartbeat()
+{
+  con.query("SELECT id FROM users WHERE username='Matthew';", function (err, result)
+        {
+          if(err)
+          {
+            console.log("error in heart beat");
+          } else
+          {
+            console.log(result);
+          }
+        });
+
+  setTimeout(heartbeat, 3600000);
+}
+
+heartbeat();
 
 // On init connection print this and there id.
 io.on('connection', (socket) => {
