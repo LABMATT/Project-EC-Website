@@ -3,6 +3,8 @@
 <head>
 
   <title>Login to HGC-ECH</title>
+  <meta charset="UTF-8">
+
 
    <style>
     body {
@@ -12,6 +14,7 @@
      position: fixed;
      height: 100%;
      width: 100%;
+     font-family: Arial, Helvetica, sans-serif;
      overscroll-behavior-x: none;
     }
 
@@ -22,9 +25,9 @@
 </head>
 <body>
 
-<script src="/HGC-ECH/HGC-ECH/site/socket.io/dist/socket.io.js"></script> 
+<script src="socket.io/dist/socket.io.js"></script> 
 
-<script>const socket = io("127.0.0.1:3000"); // hgc.labmatt.space:3000</script>
+<script>const socket = io("hgc.labmatt.space:3000"); // hgc.labmatt.space:3000</script>
 
 <script>
 
@@ -64,11 +67,13 @@ function login()
   socket.emit("login", [name, pw]);
 }
 
-socket.on('connect_failed', ()=>{
+// If socket fails to connect then alert the user the sever appears to be offline.
+socket.on('connect_error', function(err) {
+
   document.getElementById("stat").innerHTML = "Server Status:🔴Offline.";
 });
 
-socket.on('Connect', ()=>{
+socket.on("connect", function(){
   document.getElementById("stat").innerHTML = "Server Status:🟢Online.";
 });
 </script>
@@ -84,7 +89,7 @@ socket.on('Connect', ()=>{
 
   <p>You are required to aknolage that this server is low security and purly for the service of viewing develpment websites. <br> Chrome may propt you to change your pass word because of a databreach. This is due to how password fild is manged on the client side, please ignore this message.</p>
 
-  <h1 id="stat">Server Status: </h1>
+  <h1 id="stat">Server Status:🟢 </h1>
 
   <h1 id="er"></h1>
 </div>
