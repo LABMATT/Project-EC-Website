@@ -63,6 +63,14 @@ function login()
 
   socket.emit("login", [name, pw]);
 }
+
+socket.on('connect_failed', ()=>{
+  document.getElementById("stat").innerHTML = "Server Status:🔴Offline.";
+});
+
+socket.on('Connect', ()=>{
+  document.getElementById("stat").innerHTML = "Server Status:🟢Online.";
+});
 </script>
 
 <div class="center">
@@ -75,6 +83,8 @@ function login()
   <button id="subbut" onclick="login()">Login</button>
 
   <p>You are required to aknolage that this server is low security and purly for the service of viewing develpment websites. <br> Chrome may propt you to change your pass word because of a databreach. This is due to how password fild is manged on the client side, please ignore this message.</p>
+
+  <h1 id="stat">Server Status: </h1>
 
   <h1 id="er"></h1>
 </div>

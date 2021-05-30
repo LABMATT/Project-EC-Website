@@ -18,7 +18,7 @@ const io = require('socket.io')(http, {
 });
 
 // The main path where all user projects are stored. MUST END WITH SLASH
-const projectsPath = "/home/matthew/Downloads/testprojects/"; // Will be nginx location
+const projectsPath = "/home/matthew/Downloads/testprojects/"; // Will be nginx location: /var/www/test.labmatt.space/
 
 //Connects to and sql server for data.
 var con = mysql.createConnection({
