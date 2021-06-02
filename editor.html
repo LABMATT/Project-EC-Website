@@ -2,13 +2,17 @@
 <html>
     <head> 
         <title>Editor</title>
-        <link rel="stylesheet" type="text/css" href="\ech\HGC-ECH\site\editorstyle.css">
+        <link rel="stylesheet" type="text/css" href="editorstyle.css">
     </head>
+
+    <script src="socket.io/dist/socket.io.js"> ///socket.io/dist/socket.io.js </script> 
+    <script>var socket = io("localhost:3000"); // hgc.labmatt.space:3000</script> 
+
 <body scroll="no" onload="init()">
 
     <ul>    
-        <li><a class="active" href="#Home">Home</a></li>
-        <li><a class="active" href="#Home">Logout</a></li>
+        <li><a class="active" href="/user.html">Home</a></li>
+        <li><a class="active" onclick="logout()">Logout</a></li>
         <li><a href="#ViewSelectedPage">View Selected Page</a></li>
         <li><a href="#ViewSite">View Site</a></li>
         <li><a href="#ForceSave">Force Save</a></li>
@@ -26,9 +30,7 @@
           
       </div>
 
-      <div class="edit">
       <div id="numdiv">
-
         <textarea id="linenum" name="linenum" rows="30" cols="1" wrap="soft" disabled>
 1
 2
@@ -42,7 +44,7 @@
       </div>
 
       <div id="editdiv">
-      <textarea id="editbox" name="editbox" rows="30" cols="10">
+      <textarea id="editbox" name="editbox" rows="30" cols="10" onclick="countLines()">
 1 
 2
 3
@@ -53,7 +55,7 @@
 8
 </textarea>
 </div>
-</div>
+
       
 </body>
 </html>
@@ -62,15 +64,33 @@
 //https://dev.to/lennythedev/css-gotcha-how-to-fill-page-with-a-div-270j
 function init()
 {
-    var ta = document.getElementById('linenum');
-    ta.onclick = function (e) {
-        var lineNo = ta.value.substr(0, ta.selectionStart).split(/\r?\n|\r/).length;
-        var lineText = ta.value.split(/\r?\n|\r/)[lineNo - 1];
-        var numOfSpaces = lineText.split(/\s/).length - 1;
-        console.log(lineNo, lineText, numOfSpaces);
-    }
+    var cid = document.cookie.substr((document.cookie.indexOf("echid=") + 6), document.cookie.length).split(';')[0];
+    console.log(cid);
+    socket.emit("rego", cid); // registers the new socketio id to the id we saved in the cookie.
+    socket.emit("info", ["name", cid]); // Ask for our name.
 }
 
+     // IF login is invalid then send back to login page.
+    socket.on('login', function(msg)
+    {
+        if(msg == "timeout")
+        {
+            window.location.href = "index.html";
+        }
+    });
+    
 
+// Logout the user.
+function logout()
+    {
+        document.cookie = "echid=;"; 
+        socket.emit("logout", "logout");
+        location.href="index.html";
+    }
 
+function countLines()
+{
+    var lnum = document.getElementById("editbox").split("/n".length);
+    console.log(lnum);
+}
 </script>
