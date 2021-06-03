@@ -10,6 +10,8 @@
 
 <body scroll="no" onload="init()">
 
+    <header>
+    <nav>
     <ul>    
         <li><a class="active" href="/user.html">Home</a></li>
         <li><a class="active" onclick="logout()">Logout</a></li>
@@ -25,38 +27,53 @@
         <li><a href="#ViewSite">styles.css</a></li>
         <li><a href="#ForceSave">tom.png</a></li>
       </ul>
+    </nav>
+    </header>
 
-      <div id="tree">
-          
-      </div>
+    <section class="main">
+      <!-- This is the tree view of your porject-->
+     <div id="tree">
+         Tree area
+     </div>
 
-      <div id="numdiv">
-        <textarea id="linenum" name="linenum" rows="30" cols="1" wrap="soft" disabled>
-1
-2
-3
-4
-5
-6
-7
-8
-</textarea>
-      </div>
+     <!-- This is the line numbers-->
+     <div class="lineNumber">
+     <pre>
+     <div>1</div>
+     <div>2</div>
+     <div>3</div>
+     <div>4</div>
+     <div>5</div>
+     <div>6</div>
+     <div>7</div>
+     <div>8</div>
+     <div>9</div>
+     <div>10</div>
+     <div>11</div>
+     <div>12</div>
 
-      <div id="editdiv">
-      <textarea id="editbox" name="editbox" rows="30" cols="10" onclick="countLines()">
-1 
-2
-3
-4
-5
-6
-7
-8
-</textarea>
-</div>
-
+    </pre>
+     </div>
       
+     <!-- This is the editor window-->
+     <div class="editor">
+         <pre>
+         <div><span>if(</span><span>1==1)</span><span> </span>{<span></span> </div>
+         <div> </div>
+         <div><span>}</span></div>
+         <div><span>undefined</span></div>
+         <div><span>undefined</span></div>
+         <div><span>undefined</span></div>
+         <div><span>undefined</span></div>
+         <div><span>undefined</span></div>
+         <div><span>undefined</span></div>
+         <div><span>undefined</span></div>
+         
+         </pre>
+     </div>
+
+    </section>
+  
 </body>
 </html>
 
