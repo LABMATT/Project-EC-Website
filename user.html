@@ -2,8 +2,13 @@
 <html>
     <head>
         <title>User</title>
+        <link rel="stylesheet" type="text/css" href="toolbar.css">
     </head>
     <style>
+
+        body {
+            margin: 0%;
+        }
     
         table, th, td {
           border: 1px solid black;
@@ -23,29 +28,30 @@
 
         <body onload="init()">
 
-            
         <script src="socket.io/dist/socket.io.js"></script>
         <script>var socket = io("localhost:3000"); // hgc.labmatt.space:3000</script>
 
+        <nav>
+            <ul>    
+                <li><a class="active" href="user.html">Home</a></li>
+                <li><a class="active" onclick="logout()">Logout</a></li>
+                <li><a href="#ViewSelectedPage">View Selected Page</a></li>
+                <li><a href="#ViewSite">View Website</a></li>
+                <li><a href="editor.html">Open Editor</a></li>
+              </ul>
+        </nav>
+
     <div style="display: flex; flex-direction: row;">
         <h1 style="justify-content: flex-start;" id="greet"></h1>
-    
-        <button type="button" onclick="logout()" style="padding: 1%; margin-top: 1%; position: absolute; right: 11%;">Logout</button>
-        <button type="button" onclick="location.href='editor.html'" style="padding: 1%; margin-top: 1%; position: absolute; right: 1%;">Open HTML Editor</button>
     
     </div>
 
     <p>Your project is visable to anyone with a link from anywhere! You and admins are the only one who can edit it though.</p>
     <p>Here is how your project is looking!</p>
 
-    <div style="margin-right: 50%;">
-        <table id="table" style="width:100%">
-            <tr>
-              <th>File Name</th>
-              <th>View Raw HTML</th>
-              <th>View Webpage</th>
-            </tr>
-          </table>
+    <div>
+
+
     </div>
 
     <a href="test.html" target="_blank">test raw</a>

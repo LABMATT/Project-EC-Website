@@ -3,6 +3,7 @@
     <head>
         <title>Admin</title>
         <link rel="stylesheet" type="text/css" href="styles.css">
+        <link rel="stylesheet" type="text/css" href="toolbar.css">
     </head>
     <style>
     
@@ -36,18 +37,18 @@ th {
 <script src="socket.io/dist/socket.io.js"> ///socket.io/dist/socket.io.js </script> 
 <script>var socket = io("localhost:3000"); // hgc.labmatt.space:3000</script> 
 
-<div style="display: flex; flex-direction: row;">
-    <h1 style="justify-content: flex-start;" id="greet"></h1>
-
-    <button type="button" onclick="logout()" style="padding: 1%; margin-top: 1%; position: absolute; right: 20%;">Logout</button>
-    <button type="button" onclick="addUser()" style="padding: 1%; margin-top: 1%; position: absolute; right: 1%;">Save Groups</button>
-    <button type="button" onclick="addgroup()" style="padding: 1%; margin-top: 1%; position: absolute; right: 12%;">Add Group</button>
-
-</div>
-    <p style="">This is how your current class is looking!</p>
+<nav>
+    <ul>    
+        <li><a class="active" href="admin.html">Home</a></li>
+        <li><a class="active" onclick="logout()">Logout</a></li>
+        <li style="float: right;"><a onclick="addUser()">Save Groups</a></li>
+        <li style="float: right;";><a onclick="addgroup()">Add Group</a></li>
+      </ul>
+</nav>
 
     
-    <div>
+    <div style="margin: 2%; padding 2%;">
+        <p>This is how your current class is looking!</p>
         <table class="listus" id="table" style="width:100%">
             <tr>
               <th>Group Name</th>
