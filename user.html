@@ -3,7 +3,7 @@
     <head>
         <title>User</title>
         <link rel="stylesheet" type="text/css" href="toolbar.css">
-        <input id="upload" type="file" onchange="">
+        <input id="upload" type="file" onchange="sendfile(this)">
     </head>
     <style>
 
@@ -140,4 +140,14 @@
     
     });
     });
+
+
+    // Sends a file to the server.
+    function sendfile(infile)
+    {
+        let file = infile.files[0];
+        
+        socket.emit("newFile", [file.name, file]);
+      
+    }
 </script>
