@@ -5,7 +5,7 @@
         <link rel="stylesheet" type="text/css" href="toolbar.css">
         <link rel="stylesheet" type="text/css" href="userStyles.css">
         <script src="fileExplore.js"></script>
-        <input id="upload" type="file" onchange="sendfile(this)">
+        <input id="upload" type="file" onchange="sendfile(this)" multiple>
     </head>
     <style>
 
@@ -77,6 +77,7 @@
                 <tr>
                   <th>File Name</th>
                   <th>View Raw HTML</th>
+                  <th>Delete</th>
                   <th>View Webpage</th>
                 </tr>
               </table>
@@ -87,7 +88,6 @@
     <a href="test.html" target="_blank">test raw</a>
 
 </body>
-</html>
 
 <script>
 
@@ -162,11 +162,13 @@
     var row = table.insertRow(1);
     var fn = row.insertCell(0);
     var raw = row.insertCell(1);
-    var wp = row.insertCell(2);
+    var del = row.insertCell(2);
+    var wp = row.insertCell(3);
 
     fn.innerHTML = element;
     raw.innerHTML = "";
-    wp.innerHTML = "<a href='http://host.labmatt.space/" + user + "/" + element.name + "' target='_blank'>View Page</a>";
+    del.innerHTML = "<button id='" + element + "' type='button' onclick='delfile(this);'>Delete</button>";
+    wp.innerHTML = "<a href='http://host.labmatt.space/" + user + "/" + element + "' target='_blank'>View Page</a>";
     
     });
     });
@@ -175,10 +177,26 @@
     // Sends a file to the server.
     function sendfile(infile)
     {
-        let file = infile.files[0];
-        
-        socket.emit("newFile", [file.name, file]);
+        //let file = infile.files[0];
+        var fileLenght = document.getElementById('upload').files.length;
+        var fnum = 0;
 
+        console.log("there are a totla of: " + fileLenght + " Files.");
+
+        while(fnum < fileLenght)
+        {
+            console.log("this is file: " + fnum);
+            var file = infile.files[fnum];
+            socket.emit("newFile", [file.name, file]);
+            grabTable();
+            fnum++;
+        }
+    }
+
+    function delfile(filename)
+    {
+        console.log("delfile: " + filename.id);
+        socket.emit("delfile", filename.id)
         grabTable();
     }
 </script>
