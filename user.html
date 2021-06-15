@@ -63,13 +63,23 @@
             &#9484; = ┌
         -->
 
-        <div class="tree">
+        <div class="tree" style="display: none;">
            
             <pre><div id="root">hehe</div></pre>
             <pre><div>&#9474</p><p>The info</div></pre>
             <pre><div>&#9500&#9472index.html</div></pre>  
             <pre><div>&#9500 fr </div></pre>
 
+        </div>
+
+        <div style="margin-right: 50%;">
+            <table id="table" style="width:100%">
+                <tr>
+                  <th>File Name</th>
+                  <th>View Raw HTML</th>
+                  <th>View Webpage</th>
+                </tr>
+              </table>
         </div>
 
     </section>
@@ -168,6 +178,7 @@
         let file = infile.files[0];
         
         socket.emit("newFile", [file.name, file]);
-      
+
+        grabTable();
     }
 </script>
