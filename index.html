@@ -2,24 +2,35 @@
 <html>
 <head>
 
-  <title>Login to HGC-ECH</title>
+  <title>Login to ECH</title>
   <meta charset="UTF-8">
 
 
    <style>
     body {
+    background-color: #484848;
      margin: 0px;
      padding: 0px;
      overflow: hidden;
      position: fixed;
-     height: 100%;
-     width: 100%;
+     height: 100vh;
+     width: 100vw;
      font-family: Arial, Helvetica, sans-serif;
      overscroll-behavior-x: none;
+     display: flex;
+     justify-content: center;
+     color: white;
     }
 
-   .center {
+   #center {
+     display: inline-block;
+     background-color: #303030;
      padding: 2%;
+     flex-grow: 0;
+     width: 50%;
+     
+     align-self: center;
+     border-radius: 15px;
     }
  </style>
 </head>
@@ -30,6 +41,28 @@
 <script>const socket = io("localhost:3000"); // hgc.labmatt.space:3000</script>
 
 <script>
+  document.addEventListener('keydown', checkKey);
+
+  function checkKey(e)
+  {
+
+    console.log("key down is:" + e.code);
+    var keycode = e.code;
+
+    if(keycode == "Enter")
+    {
+      var focus = document.activeElement.id;
+      if(focus == "uname")
+      {
+
+        document.getElementById("psw").focus();
+      } else if(focus == "psw")
+      {
+        
+        login();
+      }
+    }
+  }
 
   // Commits to longin and loads correct page.
 socket.on('login', function(msg){
@@ -78,7 +111,10 @@ socket.on("connect", function(){
 });
 </script>
 
-<div class="center">
+<div id="center">
+
+  <h1 style="text-align: center;">Edit-Collaborate-Host Login</h1>
+
   <label for="uname"><b>Group Name</b></label>
   <input type="text" placeholder="" id="uname" maxlength="40" required>
   <br>
@@ -87,11 +123,25 @@ socket.on("connect", function(){
   <br>
   <button id="subbut" onclick="login()">Login</button>
 
-  <p>You are required to aknolage that this server is low security and purly for the service of viewing develpment websites. <br> Chrome may propt you to change your pass word because of a databreach. This is due to how password fild is manged on the client side, please ignore this message.</p>
+
+  <ul>
+    <li>You are required to acknowledge that this server is low security and purely for the service of viewing development websites.</li>
+    <br>
+    <li>Chrome may prompt you to change your password because of a data breach. This is due to the password field being managed on the client side, please ignore this message.</li>
+    <br>
+    <li>This server is not for permanent hosting, and is for project development only.</li>
+  </ul>  
+
+  <p>For help OR Server issues contact: <b>labmattcontact@gmail.com<b></p>
+  <p>All source code for this service can be dowloaded at:</p>
+  <ul>
+    <li>Server Code: <a style="color: white;" href="http://github.com/LABMATT/Project-EC-Server">https://github.com/LABMATT/Project-EC-Server</a></li>
+    <li>Website Code: <a style="color: white;" href="http://github.com/LABMATT/Project-EC-Website">https://github.com/LABMATT/Project-EC-Website</a></li>
+  </ul>
 
   <h1 id="stat">Server Status: </h1>
 
-  <h1 id="er"></h1>
+  <h1 id="er" style="color: white;"></h1>
 </div>
 
 </body>
