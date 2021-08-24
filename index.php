@@ -37,6 +37,7 @@
   <button type="submit">Login</button>
 </form>
 
+<p style="color: red; font-weight: Bold;" id="msg"></p>
 
   <ul>
     <li>You are required to acknowledge that this server is low security and purely for the service of viewing development websites.</li>
@@ -70,13 +71,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
  try {
 
-    sanitize($inUsername, 20);
-    echo "<br>";
-    sanitize($inPassword, 20);
+    $testusr = sanitize($inUsername, 20);
+    $testpsw = sanitize($inPassword, 20);
+
+    if($testusr == true && $testpsw == true)
+    {
+      login();
+    }
 
  } catch(Exception $e)
  {
-     echo "ERROR: ", $e->getMessage();
+   $error = $e->getMessage();
+     echo "<script>document.getElementById('msg').innerHTML = '$error'; </script>";
  }
 }
 
@@ -93,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
      {
 
         // Looks for patten in the string. If patten not followed fex an illigle charter then return 1. 
-         $charTest = preg_match("/[^a-zA-Z0-9\s\[\]_]+/", $inputTXT);
+         $charTest = preg_match("/[^a-zA-Z0-9\[\]_]+/", $inputTXT); //"/[^a-zA-Z0-9\s\[\]_]+/"
 
          // IF false then the patten found no illigle charters
          if($charTest == false)
@@ -112,11 +118,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
          }
          else {
-             throw new Exception("Can only contain letteres, Numbers and underscore.");
+             throw new Exception("Username and password, can only contain letters, Numbers and underscore.");
          }
 
      } else {
          throw new Exception("Input Exceeds maximum Character Limit.");
      }
+ }
+
+ // Login find if the user exists. If they do, register there session, get some info such as is admin or not, then echo the response the the webpage though javascript saving the login cookie, then redirect them to the correct page.
+ function login()
+ {
+  $servername = "localhost";
+  $username = "root";
+  $password = "";
+  
+  // Create connection
+  $conn = new mysqli($servername, $username, $password);
+  
+  // Check connection
+  if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+  }
+  echo "Connected successfully";
  }
 ?>
