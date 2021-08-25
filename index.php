@@ -38,6 +38,7 @@
 </form>
 
 <p style="color: red; font-weight: Bold;" id="msg"></p>
+<p style="color: green; font-weight: Bold;" id="msg1"></p>
 
   <ul>
     <li>You are required to acknowledge that this server is low security and purely for the service of viewing development websites.</li>
@@ -76,13 +77,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if($testusr == true && $testpsw == true)
     {
-      login();
+      login($inUsername, $inPassword);
     }
 
  } catch(Exception $e)
  {
    $error = $e->getMessage();
-     echo "<script>document.getElementById('msg').innerHTML = '$error'; </script>";
+
+     msg("lightred", $error);
  }
 }
 
@@ -127,19 +129,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
  }
 
  // Login find if the user exists. If they do, register there session, get some info such as is admin or not, then echo the response the the webpage though javascript saving the login cookie, then redirect them to the correct page.
- function login()
+ function login($inUsername, $inPassword)
  {
   $servername = "localhost";
   $username = "root";
   $password = "";
+  $database = "ech";
   
-  // Create connection
-  $conn = new mysqli($servername, $username, $password);
+  try {
+
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // Set MySQLi to throw exceptions 
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $database);
   
-  // Check connection
-  if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    // Check connection
+    if ($conn->connect_error) {
+    $sqlError = $conn->connect_error;
+
+    msg("lightred", "There was an error loging you in: " . $sqlError);
+
+    } else{
+
+    // Code from here on asks the database for user info and works with the database.
+
+    $sql = "SELECT password FROM users WHERE username='" . $inUsername . "';";
+    $pwresult = $conn->query($sql);
+
+    if ($pwresult->num_rows > 0) {
+      // output data of each row
+
+      $row = mysqli_fetch_array($pwresult);
+
+      echo $row["password"];
+      echo $inPassword;
+      
+      if(strcmp($row["password"], $inPassword) == 0)
+    {
+      msg("lightgreen", "Working to log you in.");
+
+      
+
+    } else{
+      msg("lightred", "Incorrect Username Or Password..");
+    }
+
+     
+    } else {
+      msg("lightred", "Incorrect Username Or Password.");
+    }
+
+    /*
+    
+    */
+    
+    $conn->close();
+    }
+  } catch(mysqli_sql_exception $e)
+  {
+    $error = $e->getMessage();
+    msg("lightred", "There was an error loging you in: " . $error);
   }
-  echo "Connected successfully";
+  
+ }
+
+ function msg($color, $message)
+ {
+  echo "<script>document.getElementById('msg').style.color = '" . $color . "'; </script>";
+  echo "<script>document.getElementById('msg').innerHTML = '" . $message . "'; </script>";
  }
 ?>
