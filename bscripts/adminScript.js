@@ -2,20 +2,44 @@
 // When you click on a group it does the fold out with more infomation.
 function gconFold(container) {
     console.log("Clicked!");
-    
+
     var bottom = container.parentElement.querySelector("#gbottom");
 
-    if(bottom.style.display == "none")
-    {
-        bottom.style.display = "flex";
-        container.style.borderBottomLeftRadius = "0px";
-        container.style.borderBottomRightRadius = "0px";
-    } else 
+    console.log(container.style.display);
+
+     if(bottom.style.display == "flex")
     {
         bottom.style.display = "none";
         container.style.borderBottomLeftRadius = "20px";
         container.style.borderBottomRightRadius = "20px";
+    } else
+    {
+        bottom.style.display = "flex";
+        container.style.borderBottomLeftRadius = "0px";
+        container.style.borderBottomRightRadius = "0px";
     }
+}
+
+
+// Fill gPannel
+function gPannel(data) {
+
+    // [gname, datecreated, password, filelocation, sitelink, ]
+
+    data = ["TestGroup", "2 minutes ago", "slick", "na", "https://www.labmatt.space/"];
+
+    var kinggcon = document.getElementById("kinggcon").querySelector("#gcon");
+    var clone = kinggcon.cloneNode(true);
+    clone.querySelector("#gtop").querySelector("#gname").innerHTML = data[0] + ": ";
+    clone.querySelector("#gbottom").querySelector("#ginfo1").querySelector("#gname").innerHTML = "Name: " + data[0];
+    clone.querySelector("#gbottom").querySelector("#ginfo1").querySelector("#gdate").innerHTML = "DateCreated: " + data[1];
+    clone.querySelector("#gbottom").querySelector("#ginfo1").querySelector("#gpassword").innerHTML = "Password: " + data[2];
+    clone.querySelector("#gbottom").querySelector("#ginfo2").querySelector("#gfiles").innerHTML = "View Files: " + data[3];
+    clone.querySelector("#gbottom").querySelector("#ginfo2").querySelector("#gsite").innerHTML = "View Site: <a style='color: white; font-weight: lighter; text-decoration: none;' target='_blank' href='" + data[4] + "'>" + data[4] + "</a>";
+    clone.querySelector("#gbottom").querySelector("#ginfo2").querySelector("#glink").innerHTML = "Get Link: " + data[4];
+
+    document.getElementById("groups").appendChild(clone);
+    
 }
     
     var totalNewGroups = 0;

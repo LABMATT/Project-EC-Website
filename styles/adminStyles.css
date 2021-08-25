@@ -30,6 +30,8 @@ th {
 
 #gcon {
     margin-top: 2%;
+    display: flex;
+    flex-direction: column;
 }
 
 #gtop {
@@ -50,12 +52,15 @@ th {
     margin-top: 0%;
     margin-left: 3%;
     margin-right: 3%;
+    padding-top: 2%;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     display: none;
     flex-direction: row;
     color: white;
     font-family: Arial, Helvetica, sans-serif;
+    align-items: baseline;
+
 }
 
 #gname {
@@ -63,10 +68,16 @@ th {
     font-weight: bold;
     margin-top: 0%;
     margin-bottom: 0%;
-    
 }
 
-#ginfo {
-    padding: 2%;
-    text-align: left;
+#ginfo1 {
+    padding-right: 4%;
+    order: 1;
+    justify-content: right;
+}
+
+#ginfo2 {
+    padding-right: 4%;
+    order: 1;
+    justify-content: right;
 }
