@@ -216,7 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       $conn->close();
 
-      if($isAdmin == 1)
+      if($isAdmin == 1 || $isAdmin == 2)
       {
         header("Location: admin.html");
       } else{

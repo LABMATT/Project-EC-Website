@@ -1,0 +1,70 @@
+body {
+    display: flex;
+    flex-direction: column;
+    
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 15px;
+  text-align: left;
+}
+th {
+    
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.listus th {
+    background-color: purple;
+}
+
+.nut th {
+    background-color:  yellow;
+    color: black;
+}
+
+#gcon {
+    margin-top: 2%;
+}
+
+#gtop {
+    background-color: rgb(0, 0, 200);
+    padding: 1%;
+    padding-bottom: 1%;
+    margin-left: 3%;
+    margin-right: 3%;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+#gbottom {
+    background-color: blue;
+    padding: 1%;
+    margin-top: 0%;
+    margin-left: 3%;
+    margin-right: 3%;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    display: flex;
+    flex-direction: row;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#gname {
+    color: white;
+    font-weight: bold;
+    margin-top: 0%;
+    margin-bottom: 0%;
+    
+}
+
+#ginfo {
+    padding: 2%;
+    text-align: left;
+}
