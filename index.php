@@ -160,15 +160,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       // output data of each row
 
       $row = mysqli_fetch_array($pwresult);
-
-      echo $row["password"];
-      echo $inPassword;
       
       if(strcmp($row["password"], $inPassword) == 0)
     {
       msg("lightgreen", "Working to log you in.");
 
-      
+      // Now that password is correct were gonna insert them into the active users, then save the cookie for futher login. THEN redirect them to either user or admin page.
+      finalLogin($conn, $inUsername);
 
     } else{
       msg("lightred", "Incorrect Username Or Password..");
@@ -178,12 +176,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
       msg("lightred", "Incorrect Username Or Password.");
     }
-
-    /*
-    
-    */
     
     $conn->close();
+    echo "<script type='text/javascript'>alert('bye');</script>";
     }
   } catch(mysqli_sql_exception $e)
   {
@@ -193,9 +188,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   
  }
 
+
+ // Sends a message back to the bottom of the login form, has colour and the message. 
  function msg($color, $message)
  {
   echo "<script>document.getElementById('msg').style.color = '" . $color . "'; </script>";
   echo "<script>document.getElementById('msg').innerHTML = '" . $message . "'; </script>";
+ }
+
+
+ // Used to add data to active user list and then save cookie then redirect the user.
+ function finalLogin($conn, $inUsername)
+ {
+   $isAdmin = 0;
+   $echid = (new DateTime())->getTimestamp();
+  
+  try {
+
+    $sql = "SELECT admin FROM users WHERE username='" . $inUsername . "';";
+    $adminresult = $conn->query($sql);
+
+    if ($adminresult->num_rows > 0) {
+      // output data of each row
+
+      $isAdmin = (mysqli_fetch_array($adminresult))["admin"];
+
+      $sql = "INSERT INTO active (`echid`, `socketid`, `username`, `checkin`, `admin`) VALUES ('" . $echid . "', ' tbd ', '" . $inUsername . "', '" . $echid . "', '" . $isAdmin . "');";
+      $setActive = $conn->query($sql);
+
+      setcookie("echid", $echid);
+
+      $conn->close();
+
+      if($isAdmin == 1)
+      {
+        header("Location: admin.html");
+      } else{
+        header("Location: user.html");
+      }
+     
+    } else {
+      msg("lightred", "Error Login you in. Unexpected admin return.");
+    }
+
+  } catch(mysqli_sql_exception $e)
+  {
+    $error = $e->getMessage();
+    msg("lightred", "There was an error loging you in: " . $error);
+  }
  }
 ?>

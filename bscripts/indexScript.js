@@ -66,3 +66,23 @@ document.getElementById("stat").innerHTML = "Server Status:🔴Offline.";
 socket.on("connect", function(){
 document.getElementById("stat").innerHTML = "Server Status:🟢Online.";
 });
+
+
+// Sets the login cookie to the browers cookies.
+function loginID(msg)
+{
+  console.log("Saving cookie");
+  document.cookie = "echid=" + msg + ";";
+}
+
+// Redirects to the correct page after login.
+function redir(rdv)
+{
+  if(rdv == 1)
+  {
+    window.location.href = "admin.html";
+  } else 
+  {
+    window.location.href = "user.html";
+  }
+}
