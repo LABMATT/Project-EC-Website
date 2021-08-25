@@ -178,7 +178,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     $conn->close();
-    echo "<script type='text/javascript'>alert('bye');</script>";
     }
   } catch(mysqli_sql_exception $e)
   {
