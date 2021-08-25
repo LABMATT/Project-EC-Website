@@ -23,3 +23,15 @@ body {
      align-self: center;
      border-radius: 15px;
     }
+
+    h1 {
+      font-size: 2.3vw;
+    }
+
+    p {
+      font-size: 0.7vw;
+    }
+
+    li {
+
+    }

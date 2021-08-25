@@ -9,10 +9,6 @@
   <!-- Style sheet for index -->
   <link rel="stylesheet" type="text/css" href="styles/indexStyles.css">
 
-  <!-- Setup For Sockets -->
-  <script src="socket.io/dist/socket.io.js"></script> 
-  <script>const socket = io("localhost:3000"); // hgc.labmatt.space:3000</script>
-
   <!-- Setup of scripts -->
   <script type="text/javascript" src="bscripts/indexScript.js"></script>
 
@@ -51,11 +47,12 @@
   <p>For help OR Server issues contact: <b>labmattcontact@gmail.com<b></p>
   <p>All source code for this service can be dowloaded at:</p>
   <ul>
-    <li>Server Code: <a style="color: white;" href="http://github.com/LABMATT/Project-EC-Server">https://github.com/LABMATT/Project-EC-Server</a></li>
+    <li>Old-Server Code: <a style="color: white;" href="http://github.com/LABMATT/Project-EC-Server">https://github.com/LABMATT/Project-EC-Server</a></li>
+    <li>New-Server Code: <a style="color: white;" href="http://github.com/LABMATT/Project-EC-Server-Java">https://github.com/LABMATT/Project-EC-Server-Java</a></li>
     <li>Website Code: <a style="color: white;" href="http://github.com/LABMATT/Project-EC-Website">https://github.com/LABMATT/Project-EC-Website</a></li>
   </ul>
 
-  <h1 id="stat">Server Status: </h1>
+  <h2 id="stat">Server Status: </h2>
 
   <h1 id="er" style="color: white;"></h1>
 </div>
