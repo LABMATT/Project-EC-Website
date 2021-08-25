@@ -1,3 +1,23 @@
+
+// When you click on a group it does the fold out with more infomation.
+function gconFold(container) {
+    console.log("Clicked!");
+    
+    var bottom = container.parentElement.querySelector("#gbottom");
+
+    if(bottom.style.display == "none")
+    {
+        bottom.style.display = "flex";
+        container.style.borderBottomLeftRadius = "0px";
+        container.style.borderBottomRightRadius = "0px";
+    } else 
+    {
+        bottom.style.display = "none";
+        container.style.borderBottomLeftRadius = "20px";
+        container.style.borderBottomRightRadius = "20px";
+    }
+}
+    
     var totalNewGroups = 0;
 
     // Setup our socket io connection

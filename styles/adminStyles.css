@@ -40,6 +40,8 @@ th {
     margin-right: 3%;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 #gbottom {
@@ -50,7 +52,7 @@ th {
     margin-right: 3%;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
-    display: flex;
+    display: none;
     flex-direction: row;
     color: white;
     font-family: Arial, Helvetica, sans-serif;
