@@ -15,7 +15,7 @@
 </head>
 
 <!-- Main Html Body -->
-<body>
+<body onload="init()">
 <div id="center">
 
   <h1 style="text-align: center;">Edit-Collaborate-Host Login</h1>

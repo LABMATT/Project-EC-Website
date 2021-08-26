@@ -1,4 +1,25 @@
 
+var connection = new WebSocket("ws://localhost:8080");
+
+// When connection to websocket is astablisehd then send though data.
+connection.onopen = function (event) {
+    console.log("sent");
+
+    var cid = document.cookie.substr((document.cookie.indexOf("echid=") + 6), document.cookie.length).split(';')[0];
+        console.log(cid);
+
+    connection.send("rego:" + cid);
+    connection.send("name:");
+  };
+
+  // Logout the user.
+  function logout()
+  {
+      document.cookie = "echid=;"; 
+      connection.send("logout:bye");
+      location.href="index.php";
+  }
+
 // When you click on a group it does the fold out with more infomation.
 function gconFold(container) {
     console.log("Clicked!");
@@ -177,10 +198,4 @@ function gPannel(data) {
     });
     
 
-        // Logout the user.
-        function logout()
-    {
-        document.cookie = "echid=;"; 
-        socket.emit("logout", "logout");
-        location.href="index.php";
-    }
+        
